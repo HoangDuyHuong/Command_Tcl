@@ -1,0 +1,21 @@
+Có 5 tệp đầu vào chính trong Physical Design
+1. Netlist (.v): Đây là kết quả từ giai đoạn tổng hợp mạch (Synthesis). Có thể xem nó như một bản thiết kế liệt kê danh sách các cổng logic (Cell/Components) được sử dụng và cách chúng được kế nối với nhau.
+2. LEF (Library Exchange Format): Tệp này mô tả các đặt tính của cell bao gôm kích thước, vị trí các pin, thông tin các lớp kim loại (Layer) và giới hạn định tuyến.
+3. DEF (Design Exchange Format): Tệp này đóng vai trò như một bản chụp (Snapshot) ghi lại giá trị vật lý thực tế của các linh kiện trên chip, thông tin các đường kết nối (net) và diện tích toàn bộ chip (Die area). 
+4. .lib (Liberty Timing): Tệp thư viện chứa mô hình timing, mô tả độ trễ của cell, thời gian chuyển trạng thái (Transition time), các yêu cầu về thời gian setup/hold và thôn tin tiêu thụ điện năng. 
+5. SDC (Synopsys Design Constrains): Tệp này chứa các ràng buộc về mặt thời gian do đội ngũ frontend cung cấp bao gồm các định nghĩa như clock, độ trễ đầu vào/ra và các ngoại lệ về timing (Ex: false path, multicycle path).
+
+So sánh chi tiết: Tech LEF (Tlef) và Cell LEF (Clef)
+Tech LEF:
+- Mục đích: Mô tả công trình công nghệ và các quy tắc sản xuất
+- Nội dung chính: Định nghĩa các lớp kim loại (layer), quy tắc tạo via, spacing, width, direction,...
+- Không chứa bất kỳ thông tin nào về cell hay macro
+- Nguồn cung cấp: các nhà máy gia công bán dẫn: TSMC, Itel, Samsung,...
+- Giống như luật quy hoạch thành phố (quy định đường xá, khoảng cách, giới hạn chiều cao,...)
+
+Cell LEF:
+- Mục đích: Mô tả layout vật lý cụ thể của các cell hoặc macro
+- Nội dung chính: Tên cell, danh sách chân (pins), kích thước, toạ độ vật lý của kim loại, chướng ngại vật (obstruction) 
+- Có chứa thông tin vật lý của các Standard cell, IO pads và Macros 
+- Nguồn cung cấp: Nhà cung cấp thư viện (lib vendor) như ARM, Synopsys, Cadence,... 
+- Giống như bản vẽ thiết kế một toà nhà trong thành phố (xác định kích thước, vị trí cửa ra vào).
