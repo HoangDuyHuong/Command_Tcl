@@ -27,3 +27,14 @@ llength [dbGet top.insts]
 
 cmd cout total Instances have name *buf_8*
 llength [dbGet top.insts.cell.name buf_8]
+
+Command Create/delete Placement/Routing blockage
+createPlacementBlockage/deletePlacementBlockage
+createRouteBlk/deleteRouteBlk
+
+Command to help interactive with object of design
+select_obj
+selectInst
+selectNet 
+selectPin
+

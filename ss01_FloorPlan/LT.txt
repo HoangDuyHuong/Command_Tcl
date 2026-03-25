@@ -19,3 +19,61 @@ Cell LEF:
 - Có chứa thông tin vật lý của các Standard cell, IO pads và Macros 
 - Nguồn cung cấp: Nhà cung cấp thư viện (lib vendor) như ARM, Synopsys, Cadence,... 
 - Giống như bản vẽ thiết kế một toà nhà trong thành phố (xác định kích thước, vị trí cửa ra vào).
+
+Floorplan là sau khi nạp dữ liệu. Đây là lúc các kỹ sư PD lên bản vẽ nháp cho toàn bộ chip, xác định kích thước, hình dáng và đặt các khối lớn trước khi đi vào chi tiết
+Floorplan có 5 công việc chính:
+* Define Shape: Xác định kích thước vật lý (Die/core area), tỉ lệ khung hình và đặt múc tiêu về mật độ sử dụng diện tích (Uti)
+* Place Port: Bố trí các chân tín hiệu đầu vào/ra nằm dọc theo ranh giới của block 
+* Place Sram/Macro: Sắp xếp, bố trí các khối macros vào các vị trí tối ưu. 
+* Add Physical Cell: Chèn các cell vật lý (boundary cell, endcap cell, tap cell, fillter cell) để đáp ứng các quy định sản xuất, cách lý vùng logic hoặc đảm bảo lưới điện
+* Create PG mesh: Dựng mạng lưới cấp nguồn cho toàn bộ chip.
+
+Về tính mật độ sử sụng (Chip Utilization)
+* Công thức: Uti = (Tổng diện tích Standard Cell/diện tích cùng core khả dụng) * 100%
+- Lưu ý: Diện tích vùng core khả dụng phải trừ đi diện tích bị chiểm bởi macros
+- Lý tưởng: từ 40 - 75% 
+- Quá cao(>75): gây Routing congestion, Sụt áp (IR Drop), vi phạm timming và tools load lâu.
+-  Quá thấp: Gây lãng phí silicon, làm tăng kích thước die và đội chi phí sản xuất.
+
+Về cách sắp xếp các cổng I/O (Port Location) 
+- Phải dựa trên luồng dữ liệu và cấu trúc toàn chip
+- Nên nhóm các port cùng chức năng lại với nhau
+- Tuyệt đối tránh đi dây chéo hoặc đặt các port ép vào góc hẹp vì dễ gây tắt nghẽn, tín hiệu clk cần dặt ở vị trí thuận lợi nhất.
+
+Về cách đặt khối Macros
+- Không đặt tuỳ tiện (Random): phải sắp xếp có chủ đích để tiết kiệm tài nguyên đi dây.
+- Không đặt phân tán: Gây ra các đường dây nối quá dài, làm giảm tốc độ truyền tín hiệu.
+- Không xoay ngang dọc lung tung: gây khó khăn trong việc đi dây điện (PG mesh) và nối tín hiệu.
+- Không đặt ở giữa: tránh chia cắt vùng lõi, thành nhiều mảng nhỏ lẻ tẻ, sẽ cản trở tools sắp xếp standardcell và dây đi qua.
+* Nên đặt sát biên, nhóm các macros có liên quan lại với nhau, và chừa một khe hở đủ rộng để dây tín hiệu đi ngang qua.
+
+Về mạng lưới phân bổ nguồn (PG mesh/PDN) 
+- Mục đích: tương tự như lưới điện của một thành phố, một con chip chứa hàng triệu ngôi nhà (cell) cần một mạng lưới cung cấp điện năng (VĐ/VSS) ổn định và đồng đều cho mọi thành phần.
+* Tại sao phải dùng lưới thay vì một đường dây đơn?
+- Việc chỉ dùng một đường dây dẫn đến: Sụt áp, quá nhiệt và mất điện cục bộ
+- Trong chip, việc thiếu điện áp sẽ gây ra các vấn đề về hiệu suất, timing violate, hoặc thậm chí ngừng hoạt động.
+
+* Cấu trúc và thành phần của PG mesh
+  Mạng lưới này sử dụng nhiều lớp kim loại (Metal) khác nhau. Các lớp kim loại cao hơn có điện trở thấp hơn và ít bị cản trở nên rất lý tưởng cho các đường dây dẫn điện lớn.
+- Ring/Top: Thường dùng lớp kim loại cao nhất (như M6, TopMetal,...) và đường dây rộng, chịu dòng điện cao. Có vai trò giống như đường dây cao thế, phân phối điện từ các chân cấp nguồn bên ngoài chạy bao quanh hoặc cắt ngang toàn bộ chip.
+- Stripes: Các đường kim loại nằm ngang hoặc dọc rộng hơn Rail và nhỏ hơn Ring (thường dùng M4-M5), vai trò giống như đường dây trung thế, chúng kết nối nhiều Rail lại với nhau và kết nối lên Ring để tạo thành một phần của mạng lưới.
+- PG Rail: Các đường dây nhỏ chạy theo các hàng standard cell (row) và thường ở các lớp kim loại thấp (M1- M3), vai trò như đường dây hạ thế vào nhà, chúng cung cấp trực tiếp VDD/VSS cho từng standard cell.
+
+Cấp nguồn cho Macros
+- Điểm khác biệt: Không có PG Rail thông thường chạy qua Macros.
+- Ban thân các khối Macros (như Sram) đã được thiết kế sẳn mạng lưới PG nội bộ 
+- Ở cấp block, các kỹ sư PD chi cẩn thẻ Via để kết nối các chân PG của Macors vào của các đường Stripes hoặc Ring của toàn bộ chip.
+
+Các bước xây dựng PG mesh cơ bản
+- Bắt đầu floorplan đã sắp xếp xong các khối Macros và cell vật lý
+- Thêm PG Rail cho khu vực core
+- Thêm PG Stripes cho khu vực core và thả via để nối Rail với Stripes.
+- Thêm PG Stripes cho các Macros và thả Via để nối chân PG của Macros với Stripes của core
+- Thêm PG Ring/Top và thả Via nối Stripes lên Top PG
+- Thêm PG Pads/ Terminal để xác để xác định điểm nhận nguồn từ bên ngoài
+
+Các lỗi thường gặp sau khi tạo PG mesh
+- Thiếu PG ở một số khu vực (Miss PG): Có thể do vướng các vùng cấm đi dây (RoutingBlockage), dẫn đến khu vực đó bị thiếu nguồn.
+- Thiếu Via (Miss Via): Do định nghĩa sai khiên tools ko chèn đc Via, làm các lớp lưới điện không kết nối được với nhau.
+- Mất kết nối Stripes, Via ở vùng Macros hoặc các góc hẹp: Nếu lưới điện không bao phủ tới, các cell vùng đó sẽ bij thiếu điện.
+- Thiếu hoàn toàn một mạng (Miss VSS,...): Thường do khai báo sai (VSS -> GND) trong scrips, khiến toàn bộ thiếu kế không có đường nối đất.
