@@ -1,0 +1,38 @@
+PLACEMENT 
+Tong quan 5 buoc trong qua trinh Placement 
+I. Placement khong phai dat tat ca cac cong logic vao ban do chip cung mot luc ma cong cu se thuc hien qua 5 cong doan chinh
+1. Global Placement: Sap vi tri so bo ban dau cho cac cell, tap trung toi uu hoa tong chieu dau dd (wirelenght) va congestion.
+2. optimization: Toi uu hoa 1 lan bang thay doi kich thuoc cell (resize cell), move hoac chen them bo dem (buffer)
+3. Legalize Placement: Dua cac cell ve vi tri hop le (on standard row, no overlap,...)
+4. Detailed Placement: Tinh chinh vi mo de sua loi timing/congestion 
+5. Final optimization: sua dut diem cac loi vi pham tren cac duong truyen tin hieu quan trong.
+
+II. Cac khai niem cot loi ve timing & parasitics (ky sinh)
+   Trong thuc te tin hieu khong phai la cac xung vuong hoan hao. Delay cua tin hieu phu thuoc vao dien tro (R) va dien dung (C) cua cong logic lan day doan- Transition delay: La time de tin hieu chuyen trang thai tu 0->1 hoac tu 1->0
+- Delay tren day (Net RC): L dd cang dai thi R va C cang lon, Day cang rong (W) thi R giam nhung C lai tang, RC cang lon, tin hieu cang cham.
+- Coupling Capacitance (dien dung ro ri cheo): Say ra khi 2 dd chay // cung mot luc, hai dd dat cang sat nhau hoac duong chay // cang dai thi dien dung nhieu cang cao -> tanng delay.
+- Fanout & output Capacitance: Fanout la SL cell tai (load) ma 1 cell co the lai (driver) phai keo, Fanout lon lam tang dien dung tai, dan den delay cang cao.
+- Driver Strength (Suc keo cua cell): phu thuoc vao ti le W/L cua transistor ben trong cell, ty le cang lon -> cell cang to -> suc keo cang khoe -> giam delay.
+- Pre-route va post-route: buoc Placement chua cos day kim loai that, nen RC chi la uoc tinh, phai den buoc routing, duong day moi co that va RC moi dc trich xuat chinh xac.
+
+III. Cac tip der fix timing/congestion
+* Toi uu chieu dai day (Optimize wirelenght): Co the dua cell lai va cell tai lai gan nhau, hoac chen them buffer vao duong day de chia nho RC.
+* Remove Buffer: neu duong day ngan nhung lai di qua nhieu buffer, viec xoa bot buffer se giup triet tieu bot do tre cong don cua cac cong (cell delay).
+* Split Fanout: Thay vi de 1 cell ganh 3 tai cell o xa, chen them buffer de re nhanh, giup giam ganh nang ve dien dung va rut ngan day.
+* Up/Down sizecell: co the doi tu cell nho sang cell lon de tang suc keo (driver strength), giup tin hieu chay nhanh hon. doi lai cell to se ton dien tich va cong suat.
+* Toi uu dien tich: cos the gop nhieu logic co ban thanh cac cong phuc hop de giam SL cell va area. Tuy nhien, can than vi cpmplexcell co the co nhieu pin co the gay congestion.
+* Fix congestion: Doi cac cell ra khoi khu vuc qua chat choi va cho phep thuat toan di day qua lai.
+
+IV. Legalization, Placement Status & Blockage
+* Legal Placement: Cell phai nam dung tren cac row, khop ngam voi cac thanh nguon PG (VDD/VSS) va tuyet doi khong duoc overlap, neu vi pham, chip co the bi chap mach va hong khi SX.
+* 5 trang thai cua cell:
+- Unplaced: co trong netlist nhung chua duoc tha cao ban do.
+- Placed: Da nam hop le, tool co the tu do di chuyen.
+- Fixed: Bi khoa chat vi tri, tool khong the doi di, ng co the doi di (thuong dung cho Macros, Pad).
+- Cover: Bi khoa tuyet doi, ca tool lan ky su deu khong duoc phep di chuyen hay doi kich thuoc.
+- Soft Fixed: Khong duoc di chuyen o buoc global, nhung duoc phep xe dich nhe o buoc optimize, khoang cach move limit.
+
+* Placement Blockage:
+- Hard Blockage: Cam dat bat ky standard cell vao vung nay.
+- Soft Blockage: chi cho phep dat Buffer va Inveter de noi day di xuyen qua.
+- Partial Blockage: Cho phep dat moi loai cell nhung gioi han mat do (chi dc lap day toi da 40% dien tich vung cam).
