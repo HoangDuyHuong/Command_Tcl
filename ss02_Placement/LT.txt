@@ -15,7 +15,7 @@ II. Cac khai niem cot loi ve timing & parasitics (ky sinh)
 - Driver Strength (Suc keo cua cell): phu thuoc vao ti le W/L cua transistor ben trong cell, ty le cang lon -> cell cang to -> suc keo cang khoe -> giam delay.
 - Pre-route va post-route: buoc Placement chua cos day kim loai that, nen RC chi la uoc tinh, phai den buoc routing, duong day moi co that va RC moi dc trich xuat chinh xac.
 
-III. Cac tip der fix timing/congestion
+III. Cac tip de fix timing/congestion
 * Toi uu chieu dai day (Optimize wirelenght): Co the dua cell lai va cell tai lai gan nhau, hoac chen them buffer vao duong day de chia nho RC.
 * Remove Buffer: neu duong day ngan nhung lai di qua nhieu buffer, viec xoa bot buffer se giup triet tieu bot do tre cong don cua cac cong (cell delay).
 * Split Fanout: Thay vi de 1 cell ganh 3 tai cell o xa, chen them buffer de re nhanh, giup giam ganh nang ve dien dung va rut ngan day.
@@ -36,3 +36,29 @@ IV. Legalization, Placement Status & Blockage
 - Hard Blockage: Cam dat bat ky standard cell vao vung nay.
 - Soft Blockage: chi cho phep dat Buffer va Inveter de noi day di xuyen qua.
 - Partial Blockage: Cho phep dat moi loai cell nhung gioi han mat do (chi dc lap day toi da 40% dien tich vung cam).
+
+V. Luong thuc hien Placement
+1. Global Placement: tool tu dong dat cac standard cell vao ban do chip. O buoc nay tool ch quan tam cell co nam dung row hay overlap hay ko, muc tieu chinh la lam sao toi uu wirelenght, congestion, dap ung timing co ban.
+2. Optimize: Giai quyet cac van de timing xau (do wirelenght dai hoac Fanout qua lon), cac thao tac toi uu bao gom: resize cell, move cell, add buffer, Fanout Split.
+3. Legalize Placement: Dua cac cell sau khi da toi uu vao dung row, fix overlap.
+4. Detail Placement & Final Optimize: Legalize cell co the lam timing te di, congestion. O buoc nay se tinh chinh vi mo (doi cho, move nhe), va opt lan cuoi de chot timing va sua cac loi cuc bo.
+
+* Muc tieu: 
+- Function equivalent: Mach sau khi toi uu,add buffer, change logic gate, van phai co chuc nang tuong duong voi RTL design ban dau.
+- Toi uu hieu xuat: Giam thieu toi da khaong cach giua cac logic gate de tang toc do truyen tai tin hieu cua chip.
+- Kiem soat Uti: Trong qua trinh toi uu timing (add  Buff, tang sizecell), dien tich tong cua cac cell se tang len khoang 5-10%, vi du su gia tang mat do theo tung khau: init (50%) -> after PlaceOpt (60%) -> after CTS (62-64%), after routing (67-69%). Ky su phai nam ro dieu nay de du tru dien tich, ko lam chip bi qua tai.
+
+VI. Hai khai niem timing cot loi
+* SetUp Time (T_su):
+  - Dinh nghia: La khoang time toi thieu ma data phai on dinh (stable) trc khi co suon xun nhip (Clock trigger)
+  - Ex: Giong nhu viec ban phai co mat tai ben xe buyt 15 phut truoc gio xe chay de kip checkin, cat hanh ly, on dinh cho ngoi.
+  - Violation: Data den qua tre, truot mat nhip clock.
+* Hold Time (T_hd): 
+  - Dinh nghia: la khoang thoi gian toi thieu ma tin hieu phai tiep tuc on dinh sau khi co suon xung nhip.
+  Ex: Giong nhu ban buoc len tau dien ngam, ban phai dung yen trong do mot luc cho den khi cua dong lai, neu vua buoc vao da ngay lap tuc buoc ra truoc khicua dong, he thong se bi nhieu va ko ghi nhan ban da len tau.
+  - Violation: Data thay doi qua nhanh ngay khi clock vua danh.
+
+VII. Tom tat cac ky thuat fix timing
+- Fix SetUp Time: focus on viec tin hieu di nhanh hon, cong cu se tang kich thuoc cell lai (Size up cell), fix Transition, move cell lai gan hon de rut ngan duong truyen.
+- Fix Hold Time: focus on viec la tin hieu di cham lai de khong Violation T_hd. Tool se chen them buffer vao data Path de cau gio, dam bao du lieu khong bi thay doi trang thai qua som.
+
