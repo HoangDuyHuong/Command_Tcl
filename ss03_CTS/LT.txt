@@ -1,0 +1,32 @@
+Trong giai doan Placement truoc do chung ta chi gia dinh clock la ly tuong, nhung o CTS khi tat ca cac standard cell da duoc dat xong vi tri, ta phai cung cap cho chung mot tin hieu clock thuc te.
+
+I. Tai sao phai can CTS
+- Cac duong day clock khac biet voi duong day du lieu: chung co fan out cuc ky lon vi phai cung cap clock cho hang nghin cell va cung yeu cau timing cuc ky khac khe.
+- Mac dinh tat ca chan clock duoc keo tu mot nguon duy nhat. Neu de nguyen duong day se rat dai, gay ra delay tren day lon, transition time toi te.
+- Neu duong di clock khong can bang thi se sinh ra skew, dan den violate setup/hold.
+ * Giai phap: Can chen them cac buffer/inverter de dieu khien do tre, phan nhanh tao thanh dang cay va can bang tin hieu.
+
+II. Dieu kien dau vao va muc tieu cua CTS
+- Dieu kien dau vao: no violate cell overlap, timing acceptable, congestion is good, no violate max transitiontion/ max cap.
+- Muc tieu chinh:
+  * Giam thieu skew
+  * giam thieu do tre chen (minimum insert delay/latency).
+- Rang buoc (gioi han) phai tuan thu: phai thoa man max transition, max load cap, max fanout.
+
+III. 3 khai niem quan trong cua CTS
+1. Clock Skew: la su chenh lech thoi gian giua khi tin hieu clock truyen toi FF phong data (launch FF) so voi FF nhan data (Capture FF).
+  * Phan loai: 
+    + Positive Skew: Clock toi capture tre hon so voi launch (Cap - Launch > 0). Dieu nay giup noi rong thoi gian cho chu ky, tot cho setup (them time de data kip toi) nhung  lai gay nguy hiem cho hold timing.
+    + Negative Skew: Clock toi capture som hon launch. time data chay bi bop nghet lai, xau cho setup va tot cho hold.
+
+2. Clock Latency / Insert delay
+- Dinh nghia: la tong thoi gian ma clock source den chan FF (cell) 
+- Bao gom 2 thanh phan:
+  * Source latency: la do tre nguon phat den cong dinh nghia clock cua block.
+  * Network latency: do tre tu cong dinh nghia clock chay doc theo mang luoi vao den chan clock cua FF (cell).
+- Tai sao phai du latency cang nho cang tot? Latency lam giam quy time data di chuyen, khien violate setup time, va neu latency lon can add nhieu buffer/inv de fix giay hao ton power va congestion.
+
+3. Clock Uncertainty
+- Dinh nghia: La mot khoang bien do an toan (timing margin) duoc cong them vao de phong ngua cac rui ro khong luong truoc duoc lam sai lech suong clock.
+- Nguyen nhan: Do jitter (su giao dong ngau nhien tu PLL or nhieu nguon), skew va cac bien doi ve qua trinh san xuat (PVT: power, voltage, temp). Gia tri nay se bi tru di trong qua trinh phan tich timing de dam bao mach hoat dong an toan.
+
