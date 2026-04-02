@@ -62,3 +62,25 @@ VII. Tom tat cac ky thuat fix timing
 - Fix SetUp Time: focus on viec tin hieu di nhanh hon, cong cu se tang kich thuoc cell lai (Size up cell), fix Transition, move cell lai gan hon de rut ngan duong truyen.
 - Fix Hold Time: focus on viec la tin hieu di cham lai de khong Violation T_hd. Tool se chen them buffer vao data Path de cau gio, dam bao du lieu khong bi thay doi trang thai qua som.
 
+VIII. Cach fix timing cu the
+1. Khac phuc violate Setup timing
+- Dinh nghia: Setup time a khoang thoi thieu "truoc" suon xung clock ma tin hieu phai stable 
+- Viloate: Xay ra khi du lieu den qua cham so voi mua thoi gian yeu cau, tham chi co the sau khi clock active.
+- Nguyen tac fix: Bat buoc phai lam giam do tre cua data path va delay on standard cell.
+- Cac phuong phap thuc hien:
+  * Size up cell de tang suc keo (driver strength), giup tin hieu di nhanh hon.
+  * Add buffer vao cac duong day qua dai -> cat nho do tre cua day dan.
+  * Doi cac cell tren duong truyen lai gan nhau de ngan vi tri vat ly, giam delay tren day
+  * Optimize logic on data path.
+
+2. Khac phuc violate hold timing
+- Dinh nghia: Hold time la khoang thoi gian toi thieu "sau" suong xung nhip ma tin hieu phai tiep tuc giu trang thai on dinh de bat dung nhip 
+- Violate: Xay ra khi data truyen den qua nhanh, neu thay doi trang thai trong hold time -> ghi de sai data.
+- Nguyen tac fix: Trai nguoc voi set up, phai tang do tre tren data path va standard cell.
+- Cac phuong phap thuc hien:
+  * Size down cell de lam yeu suc keo -> tin hieu truyen cham hon.;
+  * Add 1 or more buffer de co tinh tao them do delay cho duong truyen, nhung phai tinh toan de khong violate Setup timing.
+  * Ve duong day vong veo (detour net) de keo dai khoang cach vat ly, tang thoi gian truyen tin hieu.
+  * Neu truong hop re nhanh ma violate hold time (nhanh in put A & B noi va out nhanh C), thay vi add buffer o out put (trc nhanh C) se anh huong den timing cua nhanh A->C, ta phai add buffer o nhanh B trc diem noi.
+
+
