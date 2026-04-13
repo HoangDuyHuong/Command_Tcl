@@ -30,3 +30,60 @@ III. 3 khai niem quan trong cua CTS
 - Dinh nghia: La mot khoang bien do an toan (timing margin) duoc cong them vao de phong ngua cac rui ro khong luong truoc duoc lam sai lech suong clock.
 - Nguyen nhan: Do jitter (su giao dong ngau nhien tu PLL or nhieu nguon), skew va cac bien doi ve qua trinh san xuat (PVT: power, voltage, temp). Gia tri nay se bi tru di trong qua trinh phan tich timing de dam bao mach hoat dong an toan.
 
+III. Post CTS Optimization
+ Opt CTS sau khi da co cay xung nhip va fix timing
+1. CRPR (Clock Reconvergence Pessimism Removal)
+- trong STA (Static timing analysis), su bi quan (pessimism) say ra khi xung nhip lanch va capture dung chung mot phan duong day dan xung nhip, nhung tool lai phan tich chung nhu nhung duong day doc lap 
+-> dieu nay dan den viec cong them mot skew ko co thuc vao he thong
+* giai phap: CRPR giup loai bo skew phi thuc te nay khi cac duong dan dung chung mot phan duong di, tu do dieu chinh lai, phan tich setup/hold timing cho chinh xac.
+
+iV. cac dinh nghia quan trong tron CTS 
+A.  Source and Sinks (Dich)
+- Clock source: la pin ma tu do tin hieu clock toa ra 
+  * Cong dau vao chinh thiet ke
+  * Chan dau ra cua mot khoi IP 
+  * Chan dau ra cua 1 cong logic 
+- Clock Sink (diem nhan clock): all pin nhan tin hieu clock 
+  * Dau vao xung nhip cua thanh ghi 
+  * dau vao xung nhip cua 1 IP or SRAM
+B. Skew Group 
+- la mot tap hop cac FF (clock sink) dc xu ly cung nhau khi can bang thoi gian den cua clock 
+- loi ich cua group skew: 
+  * Toi uu hoa skew co kiem soat: ko nhat thiet phai can bang skew tren toan bo cac FF trong thiet ke 
+  * Multi-clock design: Moi clock domain can co skew group rieng 
+  * Thiet ke phan cap/modun: cac khoi IP hoac he thong con khac nhau co the yeu cau timing dat biet.
+C. Phan loai chan (Pin types)
+- Sink Pin: diem cuoi cua cay xung nhip (FF, Macro cell,...)
+- Stop pin: all sink pin la stop pin, duoc dung de phan tich va can bang skew, mang clock se duoc gan them buffer cho den stop pin nay nhung ko dc vuot qua no 
+- ignore pin: la cac chan ko dc coi la sink pin trong bat ky skew group nao, tuong tu nhu stop pin, mang clock dc buffer den chan nay roi dung lai 
+- Exclude pin: tuong tu nhu ignore pin, nhung mang clock se ko dc buffer den Exclude pin 
+- Through pin: dang le la stop pin, nhung chung muon tin hieu clock tiep tuc truyen qua chung.
+
+V. CLock Net Routing (dinh tuyen clock)
+ Mang clock cuc ky quan trong doi voi toan ven tin hieu, dac biet voi ban de nhieu sieu am (crosstalk)
+- Mot xung nhieu (Glitch) tren mang clock co the tao ra suon xung nhip phu, dan den sai lech chuc nang he thong.
+- Thong thuong: mang clock se duoc dinh tuyen truoc ngay trong qua trinh CTS 
+
+* Quy tac dinh tuyen phi tieu chuan (NDR - Non-default Routing)
+- De giam dien tro, dien dung, crosstalk, NDR su dung cac lop metal cao hon, day hon de dinh tuyen clock
+- Cac quy tac NDR pho bien de giam crosstalk va electromigration:
+  * Double Spacing
+  * Double Width
+  * su dung lop bao ve (shielding), lop shielding dc bao quanh boi cac tin hieu clock quan trong de cach ly nhieu tu cac tin hieu gay han (aggressor)
+
+- Hien tuong Electromigration (di cu dien tu)
+  * Do mat do dong dien cao, cac dien tu trong kim loai di chuyen voi gia toc lon.
+  * Hau qua: Tao ra cac lo hong (Viod - gay ho mach) va cac diem loi (Hillocks - gay ngan mach) tren duong day dan. NDR giup han che hien tuong nay.
+
+VI. Cac ky thuat toi uu cay xung nhip (Clock tree Optimization)
+* Clock Gated (chot xung nhip)
+   - Day la ky thuat tiet kiem nang luong, dung de tat cung nhip den cac phan tu ko hoat dong trong thiet ke.
+   - Xung nhip co the ko dc tao truc tiep tu IO ma di qua cac cong logic (nhu cong AND + Enable)
+
+* Cac phuong phap toi uu:
+  - Delay insertion: chen then do tre (add buffer/inverter)
+  - Gate relocate / buffer relocate
+  - Gate sizing / buffer sizing 
+  - Useful Skew: tan dung do lech co ich de cai thien timing (VD: tao them +2 khoang time huu ich cho viec chot data, de fix setup/hold violate)
+
+
