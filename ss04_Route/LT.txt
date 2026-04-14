@@ -1,0 +1,39 @@
+1. Muc tieu va tong quan cua giai doan Route
+- Nhiem vu chinh: Dinh tuyen all signal net con lai va tiep tuc opt timing 
+- Ban chat: tao ra cac hinh dang kim loai (metal shape) dap ung dung cac yeu cau khac khe cua quy trinh che tao thiet ke 
+- Muc tieu: Dat duoc mot thiet ke dinh tuyen (100% Route), clean DRC, meet timing (setup/hold)
+
+2. Cac yeu cau cot loi khi thuc hien Routing
+- Dat ti le dinh tuyen 100% 
+- min DRC violate 
+- Han che cac loi lien quan den toan ven tin hieu (Signal Integrity - SI)
+- min diem nong ve tat nghen tai nguyen di day (congestion hot Spots)
+- Dap ung cac luat DRC ve timing 
+
+3. Khai niem co ban va rang buoc dinh tuyen (Routing Constrains)
+- Huong di day uu tien: moi lop kim loai thuong duoc quy dinh ve mot huong di day cu the de toi uu ko gian. Ex: metal1: ngang (Horizontal), M2 doc (vertical), M3 ngang ,...
+- Routing Constrains
+ * Gioi han so lop kim loai toi da dc phep su dung (max routing layer)
+ * Thiet lap cac tieu chuan ve chieu rong toi thieu (minimum width), minimum Spacing.
+ * Chi dinh huong dinh tuyen uu tien cho tung lop kim loai cu the
+ * Han che di day lech ra khoi luoi (off-grid routing)
+ * chan ko cho phep di day qua 1 so vung nhat dinh (Block routing)
+ * Rang buot ket noi vao cac chan (pin connections)
+
+4. Bon buoc chi tiet trong quy trinh Routing
+- Gloabal Routing: Day la buoc so bo nhan xac dinh duong di phat thao giua cac cell cho moi tin hieu. Muc tieu la toi uu hoa cac yeu to nhu nhu tong chieu dai va timing cua mach.
+- Track Assignment: chuyen cac duong day dan tu buoc global routing vao cac ranh dinh tuyen (Route tracks) cu the, va giai quyet diem chong cheo.
+- Detail Route (Dinh tuyen chi tiet): ve cac doan day kim loai thuc te de noi logic giua cac chan (pin) va cac signal trong design.
+- Search and repair: tool se tim cac violate nhu ngan mach (short circuit) or spacing violate va tien hanh di day lai (rerouting) de khac phuc.
+
+5. VIA - Ket noi giua cac lop kim loai
+- Chuc nang: VIA duoc su dung de tao ket noi vat ly xuyen qua lop cach dien (Oxide) giua cac lop kim loai khac nhau ( ex: tu metal1 den metal2)
+- Phan loai VIA:
+  * Single cut VIA: VIA don 
+  * Array VIA: VIA dang mang (gom nhieu cut gom lai, giup tang do ben va giam dien tro)
+  * Stacked VIA: VIA sep chong len nhau lien tuc qua nhieu lop kim loai.
+
+6. Cac van de nang cao (Advanced Issue):
+- Timing driven Routing (dinh tuyen dinh huong timing): can phan bo ngan sach timing hop ly cho tung net, va no luc giam delay tren cac duong dan toi han (critical path).
+- Signal integrity (nhan thuc tinh toan ven tin hieu): Dinh tuyen phai tinh toan de giam thieu hien tuong nhieu xuyen am giua cac day ke nhau.
+
