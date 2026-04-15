@@ -1,3 +1,4 @@
+Route 
 1. Muc tieu va tong quan cua giai doan Route
 - Nhiem vu chinh: Dinh tuyen all signal net con lai va tiep tuc opt timing 
 - Ban chat: tao ra cac hinh dang kim loai (metal shape) dap ung dung cac yeu cau khac khe cua quy trinh che tao thiet ke 
@@ -36,4 +37,55 @@
 6. Cac van de nang cao (Advanced Issue):
 - Timing driven Routing (dinh tuyen dinh huong timing): can phan bo ngan sach timing hop ly cho tung net, va no luc giam delay tren cac duong dan toi han (critical path).
 - Signal integrity (nhan thuc tinh toan ven tin hieu): Dinh tuyen phai tinh toan de giam thieu hien tuong nhieu xuyen am giua cac day ke nhau.
+
+
+PostRoute
+7. Tong quan ve PostRoute 
+- PostRoute la buoc dien ra ngay sau qua trinh Route trong luong thiet ke 
+- Toi uu duong day kim loai da duoc dat o buoc truoc, nham dam bao thiet ke dat chuan ve timing, area, power 
+- Cac cong viec cu the trong PostRoute bao gom:
+  * Fix timing violate 
+  * Sua loi ho mach (open), ngan mach (short)
+  * fix DRCs violate
+  * Dam bao dap ung gioi han ve thoi gian chuyen trang thai toi da (max transittion), dien dung toi da (max Capacitence), fanout toi da.
+  * Tim va sua cac vi pham hieu ung Antenna (thuong dung Jumper va antenna diode)
+  * Phuc hoi lai dien tich va cong suat ro ri (Leakage power)
+  * Xu ly cac van de lien quan den tinh toan ven tinh hieu (SI)
+
+8. Anh huong cua route den timing 
+- Wire length: Duong day cang dai thi do tre RC cang lon
+- Crosstalk: Cac day dan du qua sat nhau -> gay nhieu, tao ra nhung do tre hoac xung nhieu (Glitches) ko mong muon.
+- So luong Via: Dung cang nhieu Via thi dien tro ky sinh cang tang -> dan den tang delay 
+- Routing Congestion: Neu say ra tat nghen, tool buot phai di duong vong, lam cho quang duong dai hon, va gay ton hai den timing.
+- Lua chon lop kim loai: Cac lop kim loai o tren cao thuong co dien tro thap hon, do do thuong duoc uu tien dung day dan toi han (critical nets).
+
+9. Tinh toan ven tin hieu (SI)  va nhieu xuyen am (Crosstalk)
+- Tinh toan ven tin hieu (SI) nham dam bao data duoc truyen tai toc do cao mot cach dang tin cay giua cac diem ben trong chip qua cac duong day kim loai.
+- Crosstalk: Xay ra khi mot tin hieu dang truyen tren mot duong day dan vo tinh lam anh huong den mot day dan khac o gan do.
+- Khi day gay han (Aggressor) chuyen trang thai nhanh (0->1 or ng lai) no co the lam nhieu nan nhan (Victim), khien day nay thay doi tin hieu hoac bi tre.
+* Bien phap phong tranh Crosstalk:
+  - Design Opt: tang driver strength cua cell or add buffer vao cac doan day dai.
+  - Routing Solution: Gioi han chieu dai cac duong day di //, mo mot khang cach giua cac day, or dung luoi bao ve (shielding) cho cac mang tin hieu dat biet.
+
+10. Cac loi vat ly: Antenna va Electromigration (EM)
+- Hieu ung Antenna: Xay ra trong qua trinh che tao IC do su tich tu dien tich qua muc tren duong day kim loai noi voi gate cua transistor trong qua trinh khac plasma, luong dien tich nay co the xa qua lop oxit mong cua cong va gay hu hong vinh vien.
+   - Cach sua loi: Dung Diode (Antenna Diode) chen gan cuc gate de tao duong xa dien tich, Hoac dung Jumper, tuc la nhay len lop kim loai cao hon de giu cho tong chieu dai day noi truc tiep voi cong ko vuot qua gioi han.
+- Electromigration (DI cu dien tu - EM): la su di chuyen cua cac nguyen tu kim loai do dong dien chay qua. EM co the tao ra cac diem loi (hillocks) gay ngan mach or tao ra cac lo hong (voids) gay ho mach.
+
+11. Filler cell va Metal Fills
+- Filler Cells (Cell lap day): la cac cell chi mang tinh vat ly (physical only), duoc dung de lap vao cac khoang trong giua cac standrad cells, giup duy tri tinh lien tuc cua cac thanh nguon va giam vi pham DRC cho cac base layers
+- Metal Fills (Dummy Metal Fills): la cac doan kim loai nho, lo lung (floating), duoc chen vao cac khu vuc trong sau khi toi uu hoa PostRoute.
+  * Muc dich: lam cho mat do kim loai dong deu nham tuan thu cac luat DRC bat buot cua nha may san xuat
+  * Buoc nay chi duoc thuc hien cuoi cung sau khi thiet ke da duoc sach loi DRC, LVS, toi thieu hoa vu pham SI va Antenna.
+
+12. Cac khai niem nang cao
+- dont_touch vs dont_use
+  * dont_touch: ap dung cho cac cell or net cu the trong thiet ke, yeu cau cong cu khong duoc sua doi, toi uu hoa, xoa, thay the, thay doi kich thuoc doi tuong nay, Thuong dung de bao ve cac logic dat biet hoac cac sua doi thu cong cua ky su.
+  * dont_use: Ap dung cho cac loai cell trong thu vien (lib cell), cam cong tu tuyet doi ko duoc chon cac cell nay khi anh xa hoac toi uu hoa logic, Thuong dung de loai bo cac cell co chat luong kem hoac cac cell co nguy co gay lech clock.
+
+- OCV (On Chip Variation):
+  * OCV chi ra rang cac thanh phan tren cung 1 chip van co the co do tre hoi khac nhau do su bien thien trong qua trinh san xuat va moi truong.
+  * Nguyen nhan la do cac yeu to PVT (power, Voltage, Temperature): su khac biet ve quy trinh, sut ap khong deu, or nhiet do khac nhau giua cac vung tren chip.
+  * Trong tinh toan STA, OCV se tinh toan theo truong hop xau nhat: gia dinh duong launch bi cham hon va duong capture lai nhanh hon, khien qua trinh pha tich tro nen bi quan nhung an toan hon.
+  * cac loai OCV: Basic OCV (ap dung ty le % co dinh), AOCV (dung bang do tren dua tren do xau va khoang cach), POCV(mo hinh hoa bien thien do tre theo thong ke).
 
